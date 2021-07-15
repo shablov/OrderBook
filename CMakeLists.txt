@@ -3,4 +3,4 @@ project(order_book)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(order_book main.cpp OrderBook.cpp)
+add_executable(order_book src/main.cpp src/OrderBook.cpp)

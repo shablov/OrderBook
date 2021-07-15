@@ -1,0 +1,16 @@
+---
+# This configuration requires clang-format version 8.0
+BasedOnStyle:  Google
+
+AccessModifierOffset:                -2
+AllowShortIfStatementsOnASingleLine: false
+AllowShortFunctionsOnASingleLine:    Inline
+AllowShortLoopsOnASingleLine:        false
+BreakConstructorInitializers:        BeforeComma
+ColumnLimit:                         120
+IndentCaseLabels:                    false
+SpaceBeforeInheritanceColon:         false
+TabWidth:                            2
+SortIncludes:                        false
+MaxEmptyLinesToKeep:                 2
+...

@@ -3,10 +3,7 @@
 #include <cstddef>
 #include <map>
 
-enum class Side {
-  BID,
-  ASK
-};
+enum class Side { BID, ASK };
 
 struct Element {
   double price;
