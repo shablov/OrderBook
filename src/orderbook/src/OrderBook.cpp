@@ -1,8 +1,8 @@
-#include "OrderBook.h"
+#include "orderbook/OrderBook.h"
 
-#include <iostream>
+namespace order {
 
-void OrderBook::add(Element elem) {
+void Book::add(Element elem) {
   if (elem.side == Side::ASK) {
     _asks.emplace(elem.price, elem);
   }
@@ -12,7 +12,7 @@ void OrderBook::add(Element elem) {
   }
 }
 
-void OrderBook::change(Element elem) {
+void Book::change(Element elem) {
   if (elem.side == Side::ASK) {
     if (auto it = _asks.find(elem.price); it != _asks.end()) {
       it->second = elem;
@@ -26,12 +26,12 @@ void OrderBook::change(Element elem) {
   }
 }
 
-void OrderBook::del(double price) {
+void Book::del(double price) {
   _asks.erase(price);
   _bids.erase(price);
 }
 
-double OrderBook::vwap(size_t depth) {
+double Book::vwap(size_t depth) {
   double sum = 0;
   double volumes = 0;
 
@@ -51,3 +51,5 @@ double OrderBook::vwap(size_t depth) {
 
   return sum / volumes;
 }
+
+}  // namespace order
