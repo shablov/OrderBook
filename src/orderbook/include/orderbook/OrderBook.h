@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <map>
+#include <system_error>
 
 namespace order {
 
@@ -11,17 +12,23 @@ struct Element {
   double price;
   double quantity;
   Side side;
+
+  bool is_valid();
 };
 
 class Book {
 public:
-  void add(Element elem);
+  std::error_code add(Element elem);
 
-  void change(Element elem);
+  std::error_code change(Element elem);
 
-  void del(double price);
+  std::error_code del(double price);
 
   double vwap(size_t depth);
+
+private:
+  bool checkElement(const Element& elem);
+  bool checkDouble(double value);
 
 private:
   std::map<double, Element, std::less<>> _bids;

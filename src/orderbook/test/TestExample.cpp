@@ -9,13 +9,10 @@ namespace {
 
 class TestExample: public testing::Test {
 protected:
-  void SetUp() final {}
-
-  void TearDown() final {}
-
   void setOrders(std::vector<order::Element>&& elements) {
     for (auto&& element : elements) {
-      _book.add(element);
+      auto ec = _book.add(element);
+      EXPECT_EQ(ec, std::error_code{});
     }
   }
 
@@ -81,5 +78,6 @@ TEST_F(TestExample, ManyBidAndOneAsk) {
 
   checkVwap(37.3396, 5, 4);
 }
+
 
 }  // namespace

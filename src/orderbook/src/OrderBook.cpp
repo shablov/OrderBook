@@ -1,8 +1,14 @@
 #include "orderbook/OrderBook.h"
 
+#include <cmath>
+
 namespace order {
 
-void Book::add(Element elem) {
+std::error_code Book::add(Element elem) {
+  if (!elem.is_valid()) {
+    return std::make_error_code(std::errc::invalid_argument);
+  }
+
   if (elem.side == Side::ASK) {
     _asks.emplace(elem.price, elem);
   }
@@ -10,9 +16,15 @@ void Book::add(Element elem) {
   if (elem.side == Side::BID) {
     _bids.emplace(elem.price, elem);
   }
+
+  return {};
 }
 
-void Book::change(Element elem) {
+std::error_code Book::change(Element elem) {
+  if (!elem.is_valid()) {
+    return std::make_error_code(std::errc::invalid_argument);
+  }
+
   if (elem.side == Side::ASK) {
     if (auto it = _asks.find(elem.price); it != _asks.end()) {
       it->second = elem;
@@ -24,11 +36,19 @@ void Book::change(Element elem) {
       it->second = elem;
     }
   }
+
+  return {};
 }
 
-void Book::del(double price) {
+std::error_code Book::del(double price) {
+  if (!(std::fpclassify(price) == FP_NORMAL && price > 0)) {
+    return std::make_error_code(std::errc::invalid_argument);
+  }
+
   _asks.erase(price);
   _bids.erase(price);
+
+  return {};
 }
 
 double Book::vwap(size_t depth) {
@@ -52,4 +72,7 @@ double Book::vwap(size_t depth) {
   return sum / volumes;
 }
 
+bool Element::is_valid() {
+  return (std::fpclassify(price) == FP_NORMAL && price > 0) && (std::fpclassify(quantity) == FP_NORMAL && quantity > 0);
+}
 }  // namespace order
