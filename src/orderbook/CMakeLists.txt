@@ -4,7 +4,16 @@ project(orderbook LANGUAGES CXX)
 file(GLOB_RECURSE SOURCE_FILES "${PROJECT_SOURCE_DIR}/src/*.cpp")
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
-#target_link_libraries(${PROJECT_NAME} PRIVATE )
+
+
+if (APPLE)
+    find_package(range-v3 REQUIRED)
+    target_link_libraries(${PROJECT_NAME} PUBLIC range-v3::range-v3)
+endif(APPLE)
+
+find_package(absl REQUIRED)
+target_link_libraries(${PROJECT_NAME} PUBLIC absl::absl)
+
 target_include_directories(${PROJECT_NAME}
     PUBLIC
         ${PROJECT_SOURCE_DIR}/include

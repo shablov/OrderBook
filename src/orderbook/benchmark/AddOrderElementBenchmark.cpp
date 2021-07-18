@@ -1,74 +1,85 @@
-#include <iostream>
+#include <random>
 
 #include "benchmark/benchmark.h"
 
 #include "orderbook/OrderBook.h"
+#include "orderbook/OrderBookV2.h"
+#include "orderbook/OrderBookV3.h"
 
-
-class AddOrderElementBenchmark: public benchmark::Fixture {
-public:
-  void SetUp(const ::benchmark::State& /*state*/) final { _book = order::Book{}; }
-
-  void check(std::error_code ec) {
-    if (ec != _empty_error_code) {
-      throw std::logic_error(ec.message());
-    }
+static inline std::error_code _empty_error_code = {};
+static bool check(std::error_code ec) {
+  if (ec != _empty_error_code) {
+    throw std::logic_error(ec.message());
   }
+  return true;
+}
 
-protected:
-  order::Book _book;
+template<typename OrderBookT>
+void addLargerOrderElementAlways(benchmark::State& state) {
+  OrderBookT _book;
 
-private:
-  static inline std::error_code _empty_error_code = {};
-};
-
-BENCHMARK_F(AddOrderElementBenchmark, AddLargerOrderElementAlways)(benchmark::State& state) {
-  double startPrice = 1.01;
+  double price = 1.01;
   double stepPrice = 0.01;
-  double startQuantity = 1;
+  double quantity = 1;
   double stepQuantity = 1;
   for (auto _ : state) {
-    check(_book.add({startPrice, startQuantity, order::Side::BID}));
-    check(_book.add({startPrice, startQuantity, order::Side::ASK}));
-    startPrice += stepPrice;
-    startQuantity += stepQuantity;
+    check(_book.add({price, quantity, order::Side::BID}));
+    check(_book.add({price, quantity, order::Side::ASK}));
+    price += stepPrice;
+    quantity += stepQuantity;
   }
 
   state.SetItemsProcessed(static_cast<int64_t>(state.iterations() * 2));
 }
 
-BENCHMARK_F(AddOrderElementBenchmark, AddSmallerOrderElementAlways)(benchmark::State& state) {
-  order::Book book;
-  double startPrice = 99999999.01;
+template<typename OrderBookT>
+void addSmallerOrderElementAlways(benchmark::State& state) {
+  OrderBookT _book;
+
+  double price = 99999999.01;
   double stepPrice = 0.01;
-  double startQuantity = 1;
+  double quantity = 1;
   double stepQuantity = 1;
   for (auto _ : state) {
-    check(book.add({startPrice, startQuantity, order::Side::BID}));
-    check(book.add({startPrice, startQuantity, order::Side::ASK}));
-    startPrice -= stepPrice;
-    startQuantity += stepQuantity;
+    check(_book.add({price, quantity, order::Side::BID}));
+    check(_book.add({price, quantity, order::Side::ASK}));
+    price -= stepPrice;
+    quantity += stepQuantity;
   }
 
   state.SetItemsProcessed(static_cast<int64_t>(state.iterations() * 2));
 }
 
-BENCHMARK_F(AddOrderElementBenchmark, AddMiddleOrderElementAlways)(benchmark::State& state) {
-  order::Book book;
+template<typename OrderBookT>
+void addMiddleOrderElementAlways(benchmark::State& state) {
+  OrderBookT _book;
+
   double startPrice = 0.01;
   double endPrice = 99999999.01;
   double stepPrice = 0.01;
-  double startQuantity = 1;
+  double quantity = 1;
   double stepQuantity = 1;
   for (auto _ : state) {
-    check(book.add({startPrice, startQuantity, order::Side::BID}));
-    check(book.add({endPrice, startQuantity, order::Side::BID}));
-    check(book.add({startPrice, startQuantity, order::Side::ASK}));
-    check(book.add({endPrice, startQuantity, order::Side::ASK}));
+    check(_book.add({startPrice, quantity, order::Side::BID}));
+    check(_book.add({endPrice, quantity, order::Side::BID}));
+    check(_book.add({startPrice, quantity, order::Side::ASK}));
+    check(_book.add({endPrice, quantity, order::Side::ASK}));
     startPrice += stepPrice;
     endPrice -= stepPrice;
-    startQuantity += stepQuantity;
+    quantity += stepQuantity;
   }
 
   state.SetItemsProcessed(static_cast<int64_t>(state.iterations() * 4));
 }
+
+BENCHMARK_TEMPLATE(addLargerOrderElementAlways, order::Book);
+BENCHMARK_TEMPLATE(addLargerOrderElementAlways, orderV2::Book);
+BENCHMARK_TEMPLATE(addLargerOrderElementAlways, orderV3::Book);
+
+BENCHMARK_TEMPLATE(addSmallerOrderElementAlways, order::Book);
+BENCHMARK_TEMPLATE(addSmallerOrderElementAlways, orderV2::Book);
+BENCHMARK_TEMPLATE(addSmallerOrderElementAlways, orderV3::Book);
+
+BENCHMARK_TEMPLATE(addMiddleOrderElementAlways, order::Book);
+BENCHMARK_TEMPLATE(addMiddleOrderElementAlways, orderV2::Book);
+BENCHMARK_TEMPLATE(addMiddleOrderElementAlways, orderV3::Book);
