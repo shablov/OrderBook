@@ -1,0 +1,47 @@
+FROM ubuntu:20.04
+
+COPY conanfile.txt conanfile.txt
+
+RUN \
+# Install needed packages
+    apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends --no-install-suggests -y \
+        ca-certificates \
+        cmake \
+        make \
+        libtool \
+        autotools-dev \
+        automake \
+        gcc-10 \
+        g++-10 \
+        python3-pip \
+        curl \
+        binutils && \
+    pip3 install conan && \
+# Set conan profile
+    conan profile new default && \
+    conan profile update settings.os=Linux default && \
+    conan profile update settings.os_build=Linux default && \
+    conan profile update settings.arch=x86_64 default && \
+    conan profile update settings.arch_build=x86_64 default && \
+    conan profile update settings.compiler=gcc default && \
+    conan profile update settings.compiler.version=10 default && \
+    conan profile update settings.compiler.cppstd=20 default && \
+    conan profile update settings.compiler.libcxx=libstdc++11 default && \
+    conan profile update settings.build_type=Release default && \
+# Housekeeping image
+    echo "http    80/tcp" > /etc/services && \
+    rm -rf /var/lib/apt/lists/* /var/cache/* && \
+# Set gcc as default compiler
+    export CC=/usr/bin/gcc && \
+    export CXX=/usr/bin/g++ && \
+    update-alternatives --install /usr/bin/cc cc /usr/bin/gcc-10 100 && \
+    update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++-10 100 && \
+    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 100 && \
+    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100 && \
+    update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-11 100 && \
+# Build conan packages
+    export CC=/usr/bin/gcc && \
+    export CXX=/usr/bin/g++ && \
+    conan install conanfile.txt -s build_type=Release --build=missing && \
+    conan remove "*" -s -b -f

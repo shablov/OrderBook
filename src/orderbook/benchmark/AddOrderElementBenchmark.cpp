@@ -74,20 +74,20 @@ void addMiddleOrderElementAlways(benchmark::State& state) {
   state.SetItemsProcessed(static_cast<int64_t>(state.iterations() * 4));
 }
 
-// BENCHMARK_TEMPLATE(addLargerOrderElementAlways, order::Book);
+BENCHMARK_TEMPLATE(addLargerOrderElementAlways, order::Book);
 BENCHMARK_TEMPLATE(addLargerOrderElementAlways, orderV2::Book);
-// BENCHMARK_TEMPLATE(addLargerOrderElementAlways, orderV3::Book);
+BENCHMARK_TEMPLATE(addLargerOrderElementAlways, orderV3::Book);
 BENCHMARK_TEMPLATE(addLargerOrderElementAlways, orderV2_1::Book);
 BENCHMARK_TEMPLATE(addLargerOrderElementAlways, orderEmpty::Book);
 
-// BENCHMARK_TEMPLATE(addSmallerOrderElementAlways, order::Book);
+BENCHMARK_TEMPLATE(addSmallerOrderElementAlways, order::Book);
 BENCHMARK_TEMPLATE(addSmallerOrderElementAlways, orderV2::Book);
-// BENCHMARK_TEMPLATE(addSmallerOrderElementAlways, orderV3::Book);
+BENCHMARK_TEMPLATE(addSmallerOrderElementAlways, orderV3::Book);
 BENCHMARK_TEMPLATE(addSmallerOrderElementAlways, orderV2_1::Book);
 BENCHMARK_TEMPLATE(addSmallerOrderElementAlways, orderEmpty::Book);
 
-// BENCHMARK_TEMPLATE(addMiddleOrderElementAlways, order::Book);
+BENCHMARK_TEMPLATE(addMiddleOrderElementAlways, order::Book);
 BENCHMARK_TEMPLATE(addMiddleOrderElementAlways, orderV2::Book);
-// BENCHMARK_TEMPLATE(addMiddleOrderElementAlways, orderV3::Book);
+BENCHMARK_TEMPLATE(addMiddleOrderElementAlways, orderV3::Book);
 BENCHMARK_TEMPLATE(addMiddleOrderElementAlways, orderV2_1::Book);
 BENCHMARK_TEMPLATE(addMiddleOrderElementAlways, orderEmpty::Book);

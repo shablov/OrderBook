@@ -20,7 +20,7 @@ protected:
     }
   }
 
-  void checkVwap(double expectedVwap, size_t depth, size_t digitals) {
+  void checkVwap(double expectedVwap, size_t depth, double digitals) {
     EXPECT_NEAR(expectedVwap, _book.vwap(depth), pow(0.1, digitals));
   }
 
@@ -42,25 +42,25 @@ TYPED_TEST_P(TestExample, RightExample) {
                    order::Element{37.34, 385363, order::Side::ASK}, order::Element{37.35, 340823, order::Side::ASK},
                    order::Element{37.36, 153408, order::Side::ASK}, order::Element{37.37, 187456, order::Side::ASK}});
 
-  this->checkVwap(37.3543, 5, 4);
+  this->checkVwap(37.3543, 5, 4.);
 }
 
 TYPED_TEST_P(TestExample, OneBid) {
   this->setOrders({order::Element{37.3927, 11380, order::Side::BID}});
 
-  this->checkVwap(37.3927, 5, 4);
+  this->checkVwap(37.3927, 5, 4.);
 }
 
 TYPED_TEST_P(TestExample, OneAsk) {
   this->setOrders({order::Element{37.3927, 11380, order::Side::ASK}});
 
-  this->checkVwap(37.3927, 5, 4);
+  this->checkVwap(37.3927, 5, 4.);
 }
 
 TYPED_TEST_P(TestExample, OneAskAndBid) {
   this->setOrders({order::Element{37.40, 19760, order::Side::BID}, order::Element{37.38, 11380, order::Side::ASK}});
 
-  this->checkVwap(37.3927, 5, 4);
+  this->checkVwap(37.3927, 5, 4.);
 }
 
 TYPED_TEST_P(TestExample, ManyAskAndOneBid) {
@@ -71,7 +71,7 @@ TYPED_TEST_P(TestExample, ManyAskAndOneBid) {
                    order::Element{37.35, 340823, order::Side::ASK}, order::Element{37.36, 153408, order::Side::ASK},
                    order::Element{37.37, 187456, order::Side::ASK}});
 
-  this->checkVwap(37.3524, 5, 4);
+  this->checkVwap(37.3524, 5, 4.);
 }
 
 TYPED_TEST_P(TestExample, ManyBidAndOneAsk) {
@@ -82,7 +82,7 @@ TYPED_TEST_P(TestExample, ManyBidAndOneAsk) {
                    order::Element{37.46, 72701, order::Side::BID}, order::Element{37.47, 49121, order::Side::BID},
                    order::Element{37.28, 176828, order::Side::ASK}});
 
-  this->checkVwap(37.3396, 5, 4);
+  this->checkVwap(37.3396, 5, 4.);
 }
 
 REGISTER_TYPED_TEST_SUITE_P(TestExample, RightExample, OneBid, OneAsk, OneAskAndBid, ManyAskAndOneBid,

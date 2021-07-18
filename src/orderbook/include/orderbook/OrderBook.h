@@ -4,13 +4,9 @@
 #include <map>
 #include <system_error>
 
-#ifdef __APPLE__
 #include <range/v3/view/all.hpp>
 #include <range/v3/view/concat.hpp>
 #include <range/v3/view/reverse.hpp>
-#else
-#include <ranges>
-#endif
 
 #include "Element.h"
 

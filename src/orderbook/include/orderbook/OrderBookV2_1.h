@@ -5,13 +5,9 @@
 #include <system_error>
 #include <unordered_map>
 
-#ifdef __APPLE__
 #include <range/v3/view/all.hpp>
 #include <range/v3/view/concat.hpp>
 #include <range/v3/view/reverse.hpp>
-#else
-#include <ranges>
-#endif
 
 #include <absl/container/flat_hash_map.h>
 

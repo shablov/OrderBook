@@ -1,19 +1,13 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.16)
 project(orderbook LANGUAGES CXX)
 
 file(GLOB_RECURSE SOURCE_FILES "${PROJECT_SOURCE_DIR}/src/*.cpp")
 
-add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
-
-
-if (APPLE)
-    find_package(range-v3 REQUIRED)
-    target_link_libraries(${PROJECT_NAME} PUBLIC range-v3::range-v3)
-endif(APPLE)
-
+find_package(range-v3 REQUIRED)
 find_package(absl REQUIRED)
-target_link_libraries(${PROJECT_NAME} PUBLIC absl::absl)
 
+add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
+target_link_libraries(${PROJECT_NAME} PUBLIC absl::absl range-v3::range-v3)
 target_include_directories(${PROJECT_NAME}
     PUBLIC
         ${PROJECT_SOURCE_DIR}/include
