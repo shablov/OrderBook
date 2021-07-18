@@ -8,6 +8,7 @@
 #ifdef __APPLE__
 #include <range/v3/view/all.hpp>
 #include <range/v3/view/concat.hpp>
+#include <range/v3/view/reverse.hpp>
 #else
 #include <ranges>
 #endif
@@ -34,7 +35,8 @@ public:
 
   auto elements() {
     using namespace std;
-    return ranges::concat_view(ranges::views::all(_bids), ranges::views::all(_asks));
+    return ranges::concat_view(ranges::views::all(_bids) | ranges::views::reverse,
+                               ranges::views::all(_asks) | ranges::views::reverse);
   }
 
 private:
@@ -42,11 +44,11 @@ private:
   bool checkDouble(double value);
 
 private:
-  std::map<double, Element, std::greater<>> _bids;
-  std::map<double, Element, std::less<>> _asks;
+  std::map<double, Element, std::less<>> _bids;
+  std::map<double, Element, std::greater<>> _asks;
 
   absl::node_hash_map<double, std::map<double, Element, std::greater<>>::iterator> _bidsHashTable;
   absl::node_hash_map<double, std::map<double, Element, std::less<>>::iterator> _asksHashTable;
 };
 
-}  // namespace order
+}  // namespace orderV3

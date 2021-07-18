@@ -1,26 +1,21 @@
-#include "orderbook/OrderBookV3.h"
+#include "orderbook/OrderBookV2_1.h"
 
 #include <cmath>
 
 
-namespace orderV3 {
+namespace orderV2_1 {
 
 std::error_code Book::add(Element elem) {
   if (!elem.is_valid()) {
     return std::make_error_code(std::errc::invalid_argument);
   }
 
-  switch (elem.side) {
-  case Side::BID: {
-    auto it = _bids.emplace(elem.price, elem);
-    _bidsHashTable.emplace(elem.price, it.first);
-    return {};
-  }
-  case Side::ASK: {
-    auto it = _asks.emplace(elem.price, elem);
-    _asksHashTable.emplace(elem.price, it.first);
-    return {};
-  }
+  if (elem.side == Side::ASK) {
+    auto emplaceIt = _asks.emplace(elem.price, elem);
+    _asksHashTable.emplace(elem.price, std::ref(emplaceIt.first->second));
+  } else if (elem.side == Side::BID) {
+    auto emplaceIt = _bids.emplace(elem.price, elem);
+    _bidsHashTable.emplace(elem.price, std::ref(emplaceIt.first->second));
   }
 
   return {};
@@ -31,23 +26,20 @@ std::error_code Book::change(Element elem) {
     return std::make_error_code(std::errc::invalid_argument);
   }
 
-  switch (elem.side) {
-  case Side::BID:
-    if (const auto it = _bidsHashTable.find(elem.price); it != _bidsHashTable.cend()) {
-      it->second->second = elem;
-    } else {
-      auto emplaceIt = _bids.emplace(elem.price, elem);
-      _bidsHashTable.emplace(elem.price, emplaceIt.first);
-    }
-    return {};
-  case Side::ASK:
+  if (elem.side == Side::ASK) {
     if (const auto it = _asksHashTable.find(elem.price); it != _asksHashTable.cend()) {
-      it->second->second = elem;
+      it->second.get().quantity = elem.quantity;
     } else {
       auto emplaceIt = _asks.emplace(elem.price, elem);
-      _asksHashTable.emplace(elem.price, emplaceIt.first);
+      _asksHashTable.emplace(elem.price, std::ref(emplaceIt.first->second));
     }
-    return {};
+  } else if (elem.side == Side::BID) {
+    if (const auto it = _bidsHashTable.find(elem.price); it != _bidsHashTable.cend()) {
+      it->second.get().quantity = elem.quantity;
+    } else {
+      auto emplaceIt = _bids.emplace(elem.price, elem);
+      _bidsHashTable.emplace(elem.price, std::ref(emplaceIt.first->second));
+    }
   }
 
   return {};
@@ -87,4 +79,4 @@ double Book::vwap(size_t depth) {
   return sum / volumes;
 }
 
-}  // namespace orderV3
+}  // namespace orderV2_1

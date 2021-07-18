@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <map>
 #include <system_error>
+#include <unordered_map>
 
 #ifdef __APPLE__
 #include <range/v3/view/all.hpp>
@@ -12,10 +13,15 @@
 #include <ranges>
 #endif
 
+#include <absl/container/flat_hash_map.h>
+
 #include "Element.h"
 
 
-namespace order {
+namespace orderV2_1 {
+
+using order::Element;
+using order::Side;
 
 class Book {
 public:
@@ -40,6 +46,9 @@ private:
 private:
   std::map<double, Element, std::less<>> _bids;
   std::map<double, Element, std::greater<>> _asks;
+
+  absl::flat_hash_map<double, std::reference_wrapper<Element>> _bidsHashTable;
+  absl::flat_hash_map<double, std::reference_wrapper<Element>> _asksHashTable;
 };
 
-}  // namespace order
+}  // namespace orderV2_1

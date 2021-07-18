@@ -9,4 +9,4 @@ bool Element::is_valid() {
   return (std::fpclassify(price) == FP_NORMAL && price > 0) && (std::fpclassify(quantity) == FP_NORMAL && quantity > 0);
 }
 
-}
+}  // namespace order

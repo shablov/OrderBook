@@ -4,9 +4,9 @@
 
 namespace order {
 
-template<typename T>
+template <typename T>
 bool is_equal(T lhs, T rhs) {
-  return std::fabs(lhs-rhs) <= std::numeric_limits<T>::epsilon();
+  return std::fabs(lhs - rhs) <= std::numeric_limits<T>::epsilon();
 }
 
 enum class Side { BID, ASK };
@@ -19,4 +19,4 @@ struct Element {
   bool is_valid();
 };
 
-}
+}  // namespace order

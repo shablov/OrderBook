@@ -4,11 +4,13 @@
 
 #include "orderbook/OrderBook.h"
 #include "orderbook/OrderBookV2.h"
+#include "orderbook/OrderBookV2_1.h"
+#include "orderbook/OrderBookV3.h"
 
 namespace {
 
-template<typename OrderBookT>
-class IncorrectDoubleTest : public ::testing::Test {
+template <typename OrderBookT>
+class IncorrectDoubleTest: public ::testing::Test {
 public:
   void check(std::error_code ec) { EXPECT_EQ(std::make_error_code(std::errc::invalid_argument), ec); }
 
@@ -53,7 +55,7 @@ TYPED_TEST_P(IncorrectDoubleTest, RemoveIncorrectPrice) {
 REGISTER_TYPED_TEST_SUITE_P(IncorrectDoubleTest, AddIncorrectPrice, AddIncorrectQuantity, ChangeIncorrectQuantity,
                             ChangeIncorrectPrice, RemoveIncorrectPrice);
 
-using Types = testing::Types<order::Book, orderV2::Book>;
-INSTANTIATE_TYPED_TEST_SUITE_P(test, IncorrectDoubleTest, Types,);
+using Types = testing::Types<order::Book, orderV2::Book, orderV3::Book, orderV2_1::Book>;
+INSTANTIATE_TYPED_TEST_SUITE_P(test, IncorrectDoubleTest, Types, );
 
-}
+}  // namespace

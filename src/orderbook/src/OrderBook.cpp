@@ -31,14 +31,12 @@ std::error_code Book::change(Element elem) {
     } else {
       _asks.emplace(elem.price, elem);
     }
-    return {};
   } else if (elem.side == Side::BID) {
     if (auto it = _bids.find(elem.price); it != _bids.end()) {
       it->second = elem;
     } else {
       _bids.emplace(elem.price, elem);
     }
-    return {};
   }
 
   return {};
@@ -60,14 +58,14 @@ double Book::vwap(size_t depth) {
   double volumes = 0;
 
   size_t count = 0;
-  for (auto it = _bids.crbegin(); it != _bids.crend() && count < depth; ++it, ++count) {
+  for (auto it = _bids.cbegin(); it != _bids.cend() && count < depth; ++it, ++count) {
     const auto& [price, elem] = *it;
     sum += price * elem.quantity;
     volumes += elem.quantity;
   }
 
   count = 0;
-  for (auto it = _asks.crbegin(); it != _asks.crend() && count < depth; ++it, ++count) {
+  for (auto it = _asks.cbegin(); it != _asks.cend() && count < depth; ++it, ++count) {
     const auto& [price, elem] = *it;
     sum += price * elem.quantity;
     volumes += elem.quantity;
