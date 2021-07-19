@@ -3,11 +3,7 @@
 
 #include "benchmark/benchmark.h"
 
-#include "orderbook/OrderBook.h"
-#include "orderbook/OrderBookEmpty.h"
-#include "orderbook/OrderBookV2.h"
-#include "orderbook/OrderBookV2_1.h"
-#include "orderbook/OrderBookV3.h"
+#include "orderbook/OrderBooks.h"
 
 
 static inline std::error_code _empty_error_code = {};
@@ -123,11 +119,19 @@ BENCHMARK_TEMPLATE(changeTopTenPercentPrices, orderV2::Book)
     ->RangeMultiplier(16)
     ->Range(1 << 8, 1 << 16)
     ->ArgName("BookSize");
+BENCHMARK_TEMPLATE(changeTopTenPercentPrices, orderV2_1::Book)
+    ->RangeMultiplier(16)
+    ->Range(1 << 8, 1 << 16)
+    ->ArgName("BookSize");
+BENCHMARK_TEMPLATE(changeTopTenPercentPrices, orderV2_2::Book)
+    ->RangeMultiplier(16)
+    ->Range(1 << 8, 1 << 16)
+    ->ArgName("BookSize");
 BENCHMARK_TEMPLATE(changeTopTenPercentPrices, orderV3::Book)
     ->RangeMultiplier(16)
     ->Range(1 << 8, 1 << 16)
     ->ArgName("BookSize");
-BENCHMARK_TEMPLATE(changeTopTenPercentPrices, orderV2_1::Book)
+BENCHMARK_TEMPLATE(changeTopTenPercentPrices, orderV3_1::Book)
     ->RangeMultiplier(16)
     ->Range(1 << 8, 1 << 16)
     ->ArgName("BookSize");
@@ -144,11 +148,19 @@ BENCHMARK_TEMPLATE(changeAfterTenPercentPrices, orderV2::Book)
     ->RangeMultiplier(16)
     ->Range(1 << 8, 1 << 16)
     ->ArgName("BookSize");
+BENCHMARK_TEMPLATE(changeAfterTenPercentPrices, orderV2_1::Book)
+    ->RangeMultiplier(16)
+    ->Range(1 << 8, 1 << 16)
+    ->ArgName("BookSize");
+BENCHMARK_TEMPLATE(changeAfterTenPercentPrices, orderV2_2::Book)
+    ->RangeMultiplier(16)
+    ->Range(1 << 8, 1 << 16)
+    ->ArgName("BookSize");
 BENCHMARK_TEMPLATE(changeAfterTenPercentPrices, orderV3::Book)
     ->RangeMultiplier(16)
     ->Range(1 << 8, 1 << 16)
     ->ArgName("BookSize");
-BENCHMARK_TEMPLATE(changeAfterTenPercentPrices, orderV2_1::Book)
+BENCHMARK_TEMPLATE(changeTopTenPercentPrices, orderV3_1::Book)
     ->RangeMultiplier(16)
     ->Range(1 << 8, 1 << 16)
     ->ArgName("BookSize");
@@ -165,11 +177,19 @@ BENCHMARK_TEMPLATE(changeProdLikeStatePrices, orderV2::Book)
     ->RangeMultiplier(16)
     ->Range(1 << 8, 1 << 16)
     ->ArgName("BookSize");
+BENCHMARK_TEMPLATE(changeProdLikeStatePrices, orderV2_1::Book)
+    ->RangeMultiplier(16)
+    ->Range(1 << 8, 1 << 16)
+    ->ArgName("BookSize");
+BENCHMARK_TEMPLATE(changeProdLikeStatePrices, orderV2_2::Book)
+    ->RangeMultiplier(16)
+    ->Range(1 << 8, 1 << 16)
+    ->ArgName("BookSize");
 BENCHMARK_TEMPLATE(changeProdLikeStatePrices, orderV3::Book)
     ->RangeMultiplier(16)
     ->Range(1 << 8, 1 << 16)
     ->ArgName("BookSize");
-BENCHMARK_TEMPLATE(changeProdLikeStatePrices, orderV2_1::Book)
+BENCHMARK_TEMPLATE(changeTopTenPercentPrices, orderV3_1::Book)
     ->RangeMultiplier(16)
     ->Range(1 << 8, 1 << 16)
     ->ArgName("BookSize");

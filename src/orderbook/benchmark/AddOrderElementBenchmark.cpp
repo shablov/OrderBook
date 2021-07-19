@@ -2,11 +2,7 @@
 
 #include "benchmark/benchmark.h"
 
-#include "orderbook/OrderBook.h"
-#include "orderbook/OrderBookEmpty.h"
-#include "orderbook/OrderBookV2.h"
-#include "orderbook/OrderBookV2_1.h"
-#include "orderbook/OrderBookV3.h"
+#include "orderbook/OrderBooks.h"
 
 static inline std::error_code _empty_error_code = {};
 static bool check(std::error_code ec) {
@@ -76,18 +72,24 @@ void addMiddleOrderElementAlways(benchmark::State& state) {
 
 BENCHMARK_TEMPLATE(addLargerOrderElementAlways, order::Book);
 BENCHMARK_TEMPLATE(addLargerOrderElementAlways, orderV2::Book);
-BENCHMARK_TEMPLATE(addLargerOrderElementAlways, orderV3::Book);
 BENCHMARK_TEMPLATE(addLargerOrderElementAlways, orderV2_1::Book);
+BENCHMARK_TEMPLATE(addLargerOrderElementAlways, orderV2_2::Book);
+BENCHMARK_TEMPLATE(addLargerOrderElementAlways, orderV3::Book);
+BENCHMARK_TEMPLATE(addLargerOrderElementAlways, orderV3_1::Book);
 BENCHMARK_TEMPLATE(addLargerOrderElementAlways, orderEmpty::Book);
 
 BENCHMARK_TEMPLATE(addSmallerOrderElementAlways, order::Book);
 BENCHMARK_TEMPLATE(addSmallerOrderElementAlways, orderV2::Book);
-BENCHMARK_TEMPLATE(addSmallerOrderElementAlways, orderV3::Book);
 BENCHMARK_TEMPLATE(addSmallerOrderElementAlways, orderV2_1::Book);
+BENCHMARK_TEMPLATE(addSmallerOrderElementAlways, orderV2_2::Book);
+BENCHMARK_TEMPLATE(addSmallerOrderElementAlways, orderV3::Book);
+BENCHMARK_TEMPLATE(addSmallerOrderElementAlways, orderV3_1::Book);
 BENCHMARK_TEMPLATE(addSmallerOrderElementAlways, orderEmpty::Book);
 
 BENCHMARK_TEMPLATE(addMiddleOrderElementAlways, order::Book);
 BENCHMARK_TEMPLATE(addMiddleOrderElementAlways, orderV2::Book);
-BENCHMARK_TEMPLATE(addMiddleOrderElementAlways, orderV3::Book);
 BENCHMARK_TEMPLATE(addMiddleOrderElementAlways, orderV2_1::Book);
+BENCHMARK_TEMPLATE(addMiddleOrderElementAlways, orderV2_2::Book);
+BENCHMARK_TEMPLATE(addMiddleOrderElementAlways, orderV3::Book);
+BENCHMARK_TEMPLATE(addMiddleOrderElementAlways, orderV3_1::Book);
 BENCHMARK_TEMPLATE(addMiddleOrderElementAlways, orderEmpty::Book);

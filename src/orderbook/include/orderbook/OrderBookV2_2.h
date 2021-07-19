@@ -14,7 +14,7 @@
 #include "Element.h"
 
 
-namespace orderV2 {
+namespace orderV2_2 {
 
 using order::Element;
 using order::Side;
@@ -31,8 +31,8 @@ public:
 
   auto orders() {
     using namespace std;
-    return ranges::concat_view(ranges::views::all(_bids) | ranges::views::reverse,
-                               ranges::views::all(_asks) | ranges::views::reverse);
+    return ranges::concat_view(ranges::views::all(_orders[static_cast<size_t>(Side::BID)]) | ranges::views::reverse,
+                               ranges::views::all(_orders[static_cast<size_t>(Side::ASK)]));
   }
 
 private:
@@ -40,11 +40,10 @@ private:
   bool checkDouble(double value);
 
 private:
-  std::map<double, Element, std::less<>> _bids;
-  std::map<double, Element, std::greater<>> _asks;
-
-  absl::flat_hash_map<double, std::map<double, Element, std::less<>>::iterator> _bidsHashTable;
-  absl::flat_hash_map<double, std::map<double, Element, std::greater<>>::iterator> _asksHashTable;
+  std::array<std::map<double, Element>, 2> _orders =
+      std::array{std::map<double, Element>{}, std::map<double, Element>{}};
+  std::array<absl::flat_hash_map<double, Element*>, 2> _ordersHashTable =
+      std::array{absl::flat_hash_map<double, Element*>{}, absl::flat_hash_map<double, Element*>{}};
 };
 
-}  // namespace orderV2
+}  // namespace orderV2_2

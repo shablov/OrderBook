@@ -29,7 +29,7 @@ public:
 
   double vwap(size_t depth);
 
-  auto elements() {
+  auto orders() {
     using namespace std;
     return ranges::concat_view(ranges::views::all(_bids) | ranges::views::reverse,
                                ranges::views::all(_asks) | ranges::views::reverse);
@@ -43,8 +43,8 @@ private:
   std::map<double, Element, std::less<>> _bids;
   std::map<double, Element, std::greater<>> _asks;
 
-  absl::flat_hash_map<double, std::reference_wrapper<Element>> _bidsHashTable;
-  absl::flat_hash_map<double, std::reference_wrapper<Element>> _asksHashTable;
+  absl::flat_hash_map<double, Element*> _bidsHashTable;
+  absl::flat_hash_map<double, Element*> _asksHashTable;
 };
 
 }  // namespace orderV2_1

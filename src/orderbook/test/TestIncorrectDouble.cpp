@@ -2,10 +2,7 @@
 
 #include <gtest/gtest.h>
 
-#include "orderbook/OrderBook.h"
-#include "orderbook/OrderBookV2.h"
-#include "orderbook/OrderBookV2_1.h"
-#include "orderbook/OrderBookV3.h"
+#include "orderbook/OrderBooks.h"
 
 namespace {
 
@@ -55,7 +52,8 @@ TYPED_TEST_P(IncorrectDoubleTest, RemoveIncorrectPrice) {
 REGISTER_TYPED_TEST_SUITE_P(IncorrectDoubleTest, AddIncorrectPrice, AddIncorrectQuantity, ChangeIncorrectQuantity,
                             ChangeIncorrectPrice, RemoveIncorrectPrice);
 
-using Types = testing::Types<order::Book, orderV2::Book, orderV3::Book, orderV2_1::Book>;
+using Types =
+    testing::Types<order::Book, orderV2::Book, orderV2_1::Book, orderV2_2::Book, orderV3::Book, orderV3_1::Book>;
 INSTANTIATE_TYPED_TEST_SUITE_P(test, IncorrectDoubleTest, Types, );
 
 }  // namespace

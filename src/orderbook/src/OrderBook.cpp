@@ -1,7 +1,8 @@
 #include "orderbook/OrderBook.h"
 
 #include <cmath>
-#include <iostream>
+
+#include <range/v3/view/take.hpp>
 
 
 namespace order {
@@ -57,17 +58,13 @@ double Book::vwap(size_t depth) {
   double sum = 0;
   double volumes = 0;
 
-  size_t count = 0;
-  for (auto it = _bids.cbegin(); it != _bids.cend() && count < depth; ++it, ++count) {
-    const auto& [price, elem] = *it;
-    sum += price * elem.quantity;
+  for (const auto& [price, elem] : _bids | ranges::views::take(depth)) {
+    sum += elem.price * elem.quantity;
     volumes += elem.quantity;
   }
 
-  count = 0;
-  for (auto it = _asks.cbegin(); it != _asks.cend() && count < depth; ++it, ++count) {
-    const auto& [price, elem] = *it;
-    sum += price * elem.quantity;
+  for (const auto& [price, elem] : _asks | ranges::views::take(depth)) {
+    sum += elem.price * elem.quantity;
     volumes += elem.quantity;
   }
 

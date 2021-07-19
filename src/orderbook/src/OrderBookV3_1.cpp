@@ -1,11 +1,11 @@
-#include "orderbook/OrderBookV3.h"
+#include "orderbook/OrderBookV3_1.h"
 
 #include <cmath>
 
 #include <range/v3/view/take.hpp>
 
 
-namespace orderV3 {
+namespace orderV3_1 {
 
 std::error_code Book::add(Element elem) {
   if (!elem.is_valid()) {
@@ -13,11 +13,25 @@ std::error_code Book::add(Element elem) {
   }
 
   if (elem.side == Side::ASK) {
+    bool needNormilize = _asks.capacity() == _asks.size();
     auto emplaceIt = _asks.emplace(_asks.cend(), elem);
-    _asksHashTable.emplace(elem.price, emplaceIt);
+    if (needNormilize) {
+      for (auto it = _asks.begin(), end = _asks.end(); it != end; ++it) {
+        _asksHashTable[it->price] = it;
+      }
+    } else {
+      _asksHashTable.emplace(elem.price, emplaceIt);
+    }
   } else if (elem.side == Side::BID) {
+    bool needNormilize = _bids.capacity() == _bids.size();
     auto emplaceIt = _bids.emplace(_bids.cend(), elem);
-    _bidsHashTable.emplace(elem.price, emplaceIt);
+    if (needNormilize) {
+      for (auto it = _bids.begin(), end = _bids.end(); it != end; ++it) {
+        _bidsHashTable[it->price] = it;
+      }
+    } else {
+      _bidsHashTable.emplace(elem.price, emplaceIt);
+    }
   }
 
   return {};
@@ -33,16 +47,30 @@ std::error_code Book::change(Element elem) {
     if (const auto foundIt = _bidsHashTable.find(elem.price); foundIt != _bidsHashTable.cend()) {
       foundIt->second->quantity = elem.quantity;
     } else {
+      bool needNormilize = _bids.capacity() == _bids.size();
       auto emplaceIt = _bids.emplace(_bids.cend(), elem);
-      _bidsHashTable.emplace(elem.price, emplaceIt);
+      if (needNormilize) {
+        for (auto it = _bids.begin(), end = _bids.end(); it != end; ++it) {
+          _bidsHashTable[it->price] = it;
+        }
+      } else {
+        _bidsHashTable.emplace(elem.price, emplaceIt);
+      }
     }
     return {};
   case Side::ASK:
     if (const auto foundIt = _asksHashTable.find(elem.price); foundIt != _asksHashTable.cend()) {
       foundIt->second->quantity = elem.quantity;
     } else {
+      bool needNormilize = _asks.capacity() == _asks.size();
       auto emplaceIt = _asks.emplace(_asks.cend(), elem);
-      _asksHashTable.emplace(elem.price, emplaceIt);
+      if (needNormilize) {
+        for (auto it = _asks.begin(), end = _asks.end(); it != end; ++it) {
+          _asksHashTable[it->price] = it;
+        }
+      } else {
+        _asksHashTable.emplace(elem.price, emplaceIt);
+      }
     }
     return {};
   }
@@ -100,4 +128,4 @@ double Book::vwap(size_t depth) {
   return sum / volumes;
 }
 
-}  // namespace orderV3
+}  // namespace orderV3_1

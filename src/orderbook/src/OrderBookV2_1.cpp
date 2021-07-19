@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include <range/v3/view/take.hpp>
+
 
 namespace orderV2_1 {
 
@@ -12,10 +14,10 @@ std::error_code Book::add(Element elem) {
 
   if (elem.side == Side::ASK) {
     auto emplaceIt = _asks.emplace(elem.price, elem);
-    _asksHashTable.emplace(elem.price, std::ref(emplaceIt.first->second));
+    _asksHashTable.emplace(elem.price, &emplaceIt.first->second);
   } else if (elem.side == Side::BID) {
     auto emplaceIt = _bids.emplace(elem.price, elem);
-    _bidsHashTable.emplace(elem.price, std::ref(emplaceIt.first->second));
+    _bidsHashTable.emplace(elem.price, &emplaceIt.first->second);
   }
 
   return {};
@@ -28,17 +30,17 @@ std::error_code Book::change(Element elem) {
 
   if (elem.side == Side::ASK) {
     if (const auto it = _asksHashTable.find(elem.price); it != _asksHashTable.cend()) {
-      it->second.get().quantity = elem.quantity;
+      it->second->quantity = elem.quantity;
     } else {
       auto emplaceIt = _asks.emplace(elem.price, elem);
-      _asksHashTable.emplace(elem.price, std::ref(emplaceIt.first->second));
+      _asksHashTable.emplace(elem.price, &emplaceIt.first->second);
     }
   } else if (elem.side == Side::BID) {
     if (const auto it = _bidsHashTable.find(elem.price); it != _bidsHashTable.cend()) {
-      it->second.get().quantity = elem.quantity;
+      it->second->quantity = elem.quantity;
     } else {
       auto emplaceIt = _bids.emplace(elem.price, elem);
-      _bidsHashTable.emplace(elem.price, std::ref(emplaceIt.first->second));
+      _bidsHashTable.emplace(elem.price, &emplaceIt.first->second);
     }
   }
 
@@ -62,17 +64,13 @@ double Book::vwap(size_t depth) {
   double sum = 0;
   double volumes = 0;
 
-  size_t count = 0;
-  for (auto it = _bids.cbegin(); it != _bids.cend() && count < depth; ++it, ++count) {
-    const auto& [price, elem] = *it;
-    sum += price * elem.quantity;
+  for (const auto& [price, elem] : _bids | ranges::views::take(depth)) {
+    sum += elem.price * elem.quantity;
     volumes += elem.quantity;
   }
 
-  count = 0;
-  for (auto it = _asks.cbegin(); it != _asks.cend() && count < depth; ++it, ++count) {
-    const auto& [price, elem] = *it;
-    sum += price * elem.quantity;
+  for (const auto& [price, elem] : _asks | ranges::views::take(depth)) {
+    sum += elem.price * elem.quantity;
     volumes += elem.quantity;
   }
 

@@ -23,7 +23,7 @@ public:
 
   double vwap(size_t depth);
 
-  auto elements() {
+  auto orders() {
     using namespace std;
     return ranges::concat_view(ranges::views::all(_bids) | ranges::views::reverse,
                                ranges::views::all(_asks) | ranges::views::reverse);
