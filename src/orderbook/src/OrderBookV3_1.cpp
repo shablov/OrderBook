@@ -7,45 +7,25 @@
 
 namespace orderV3_1 {
 
-std::error_code Book::add(Element elem) {
-  if (!elem.is_valid()) {
-    return std::make_error_code(std::errc::invalid_argument);
-  }
-
+void Book::add(Element elem) {
+  /// Unite orders as NYSE exchange
   if (elem.side == Side::ASK) {
-    bool needNormilize = _asks.capacity() == _asks.size();
-    auto emplaceIt = _asks.emplace(_asks.cend(), elem);
-    if (needNormilize) {
-      for (auto it = _asks.begin(), end = _asks.end(); it != end; ++it) {
-        _asksHashTable[it->price] = it;
-      }
+    if (const auto foundIt = _asksHashTable.find(elem.price); foundIt != _asksHashTable.cend()) {
+      foundIt->second->quantity += elem.quantity;
     } else {
-      _asksHashTable.emplace(elem.price, emplaceIt);
+      bool needNormilize = _asks.capacity() == _asks.size();
+      auto emplaceIt = _asks.emplace(_asks.cend(), elem);
+      if (needNormilize) {
+        for (auto it = _asks.begin(), end = _asks.end(); it != end; ++it) {
+          _asksHashTable[it->price] = it;
+        }
+      } else {
+        _asksHashTable.emplace(elem.price, emplaceIt);
+      }
     }
   } else if (elem.side == Side::BID) {
-    bool needNormilize = _bids.capacity() == _bids.size();
-    auto emplaceIt = _bids.emplace(_bids.cend(), elem);
-    if (needNormilize) {
-      for (auto it = _bids.begin(), end = _bids.end(); it != end; ++it) {
-        _bidsHashTable[it->price] = it;
-      }
-    } else {
-      _bidsHashTable.emplace(elem.price, emplaceIt);
-    }
-  }
-
-  return {};
-}
-
-std::error_code Book::change(Element elem) {
-  if (!elem.is_valid()) {
-    return std::make_error_code(std::errc::invalid_argument);
-  }
-
-  switch (elem.side) {
-  case Side::BID:
     if (const auto foundIt = _bidsHashTable.find(elem.price); foundIt != _bidsHashTable.cend()) {
-      foundIt->second->quantity = elem.quantity;
+      foundIt->second->quantity += elem.quantity;
     } else {
       bool needNormilize = _bids.capacity() == _bids.size();
       auto emplaceIt = _bids.emplace(_bids.cend(), elem);
@@ -57,8 +37,11 @@ std::error_code Book::change(Element elem) {
         _bidsHashTable.emplace(elem.price, emplaceIt);
       }
     }
-    return {};
-  case Side::ASK:
+  }
+}
+
+void Book::change(Element elem) {
+  if (elem.side == Side::ASK) {
     if (const auto foundIt = _asksHashTable.find(elem.price); foundIt != _asksHashTable.cend()) {
       foundIt->second->quantity = elem.quantity;
     } else {
@@ -72,18 +55,24 @@ std::error_code Book::change(Element elem) {
         _asksHashTable.emplace(elem.price, emplaceIt);
       }
     }
-    return {};
+  } else if (elem.side == Side::BID) {
+    if (const auto foundIt = _bidsHashTable.find(elem.price); foundIt != _bidsHashTable.cend()) {
+      foundIt->second->quantity = elem.quantity;
+    } else {
+      bool needNormilize = _bids.capacity() == _bids.size();
+      auto emplaceIt = _bids.emplace(_bids.cend(), elem);
+      if (needNormilize) {
+        for (auto it = _bids.begin(), end = _bids.end(); it != end; ++it) {
+          _bidsHashTable[it->price] = it;
+        }
+      } else {
+        _bidsHashTable.emplace(elem.price, emplaceIt);
+      }
+    }
   }
-
-  return {};
 }
 
-std::error_code Book::del(double price) {
-  if (!(std::fpclassify(price) == FP_NORMAL && price > 0)) {
-    return std::make_error_code(std::errc::invalid_argument);
-  }
-
-
+void Book::del(double price) {
   if (auto it = _asksHashTable.find(price); it != _asksHashTable.cend()) {
     if ((it->second + 1) != _asks.cend()) {
       auto place = it->second - _asks.begin();
@@ -92,6 +81,7 @@ std::error_code Book::del(double price) {
       std::iter_swap(it->second, swappedIt);
       _asksHashTable[swappedPrice] = _asks.begin() + place;
     }
+    _asksHashTable.erase(it);
     _asks.pop_back();
   }
 
@@ -101,15 +91,18 @@ std::error_code Book::del(double price) {
       auto swappedIt = _bids.end() - 1;
       auto swappedPrice = swappedIt->price;
       std::iter_swap(it->second, swappedIt);
-      _bidsHashTable[swappedPrice] = _asks.begin() + place;
+      _bidsHashTable[swappedPrice] = _bids.begin() + place;
     }
-    _asks.pop_back();
+    _bidsHashTable.erase(it);
+    _bids.pop_back();
   }
-
-  return {};
 }
 
 double Book::vwap(size_t depth) {
+  if (_bids.empty() && _asks.empty()) {
+    return 0.;
+  }
+
   double sum = 0;
   double volumes = 0;
   std::vector<Element> orders(depth * 2);

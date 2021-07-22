@@ -7,3 +7,4 @@
 #include "orderbook/OrderBookV2_2.h"
 #include "orderbook/OrderBookV3.h"
 #include "orderbook/OrderBookV3_1.h"
+#include "orderbook/OrderBookV3_2.h"

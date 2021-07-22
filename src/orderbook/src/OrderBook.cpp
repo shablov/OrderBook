@@ -7,25 +7,24 @@
 
 namespace order {
 
-std::error_code Book::add(Element elem) {
-  if (!elem.is_valid()) {
-    return std::make_error_code(std::errc::invalid_argument);
-  }
-
+void Book::add(Element elem) {
+  /// Unite orders as NYSE exchange
   if (elem.side == Side::ASK) {
-    _asks.emplace(elem.price, elem);
+    if (auto it = _asks.find(elem.price); it != _asks.end()) {
+      it->second.quantity += elem.quantity;
+    } else {
+      _asks.emplace(elem.price, elem);
+    }
   } else if (elem.side == Side::BID) {
-    _bids.emplace(elem.price, elem);
+    if (auto it = _bids.find(elem.price); it != _bids.end()) {
+      it->second.quantity += elem.quantity;
+    } else {
+      _bids.emplace(elem.price, elem);
+    }
   }
-
-  return {};
 }
 
-std::error_code Book::change(Element elem) {
-  if (!elem.is_valid()) {
-    return std::make_error_code(std::errc::invalid_argument);
-  }
-
+void Book::change(Element elem) {
   if (elem.side == Side::ASK) {
     if (auto it = _asks.find(elem.price); it != _asks.end()) {
       it->second = elem;
@@ -39,22 +38,18 @@ std::error_code Book::change(Element elem) {
       _bids.emplace(elem.price, elem);
     }
   }
-
-  return {};
 }
 
-std::error_code Book::del(double price) {
-  if (!(std::fpclassify(price) == FP_NORMAL && price > 0)) {
-    return std::make_error_code(std::errc::invalid_argument);
-  }
-
+void Book::del(double price) {
   _asks.erase(price);
   _bids.erase(price);
-
-  return {};
 }
 
 double Book::vwap(size_t depth) {
+  if (_bids.empty() && _asks.empty()) {
+    return 0.;
+  }
+
   double sum = 0;
   double volumes = 0;
 

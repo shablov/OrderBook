@@ -21,11 +21,11 @@ using order::Side;
 
 class Book {
 public:
-  std::error_code add(Element elem);
+  void add(Element elem);
 
-  std::error_code change(Element elem);
+  void change(Element elem);
 
-  std::error_code del(double price);
+  void del(double price);
 
   double vwap(size_t depth);
 

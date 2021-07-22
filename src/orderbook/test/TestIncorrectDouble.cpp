@@ -20,33 +20,38 @@ protected:
 TYPED_TEST_SUITE_P(IncorrectDoubleTest);
 
 TYPED_TEST_P(IncorrectDoubleTest, AddIncorrectPrice) {
-  for (auto value : IncorrectDoubleTest<TypeParam>::_range) {
-    this->check(this->_book.add(order::Element{value, 11380, order::Side::BID}));
-  }
+  GTEST_SKIP_("Removed error code for check input data");
+  //  for (auto value : IncorrectDoubleTest<TypeParam>::_range) {
+  //    this->check(this->_book.add(order::Element{value, 11380, order::Side::BID}));
+  //  }
 }
 
 TYPED_TEST_P(IncorrectDoubleTest, AddIncorrectQuantity) {
-  for (auto value : IncorrectDoubleTest<TypeParam>::_range) {
-    this->check(this->_book.add(order::Element{10.0, value, order::Side::ASK}));
-  }
+  GTEST_SKIP_("Removed error code for check input data");
+  //  for (auto value : IncorrectDoubleTest<TypeParam>::_range) {
+  //    this->check(this->_book.add(order::Element{10.0, value, order::Side::ASK}));
+  //  }
 }
 
 TYPED_TEST_P(IncorrectDoubleTest, ChangeIncorrectQuantity) {
-  for (auto value : IncorrectDoubleTest<TypeParam>::_range) {
-    this->check(this->_book.change(order::Element{10.0, value, order::Side::BID}));
-  }
+  GTEST_SKIP_("Removed error code for check input data");
+  //  for (auto value : IncorrectDoubleTest<TypeParam>::_range) {
+  //    this->check(this->_book.change(order::Element{10.0, value, order::Side::BID}));
+  //  }
 }
 
 TYPED_TEST_P(IncorrectDoubleTest, ChangeIncorrectPrice) {
-  for (auto value : IncorrectDoubleTest<TypeParam>::_range) {
-    this->check(this->_book.change(order::Element{value, 10.0, order::Side::ASK}));
-  }
+  GTEST_SKIP_("Removed error code for check input data");
+  //  for (auto value : IncorrectDoubleTest<TypeParam>::_range) {
+  //    this->check(this->_book.change(order::Element{value, 10.0, order::Side::ASK}));
+  //  }
 }
 
 TYPED_TEST_P(IncorrectDoubleTest, RemoveIncorrectPrice) {
-  for (auto value : IncorrectDoubleTest<TypeParam>::_range) {
-    this->check(this->_book.del(value));
-  }
+  GTEST_SKIP_("Removed error code for check input data");
+  //  for (auto value : IncorrectDoubleTest<TypeParam>::_range) {
+  //    this->check(this->_book.del(value));
+  //  }
 }
 
 REGISTER_TYPED_TEST_SUITE_P(IncorrectDoubleTest, AddIncorrectPrice, AddIncorrectQuantity, ChangeIncorrectQuantity,

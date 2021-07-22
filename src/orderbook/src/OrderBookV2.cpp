@@ -7,27 +7,26 @@
 
 namespace orderV2 {
 
-std::error_code Book::add(Element elem) {
-  if (!elem.is_valid()) {
-    return std::make_error_code(std::errc::invalid_argument);
-  }
-
+void Book::add(Element elem) {
+  /// Unite orders as NYSE exchange
   if (elem.side == Side::ASK) {
-    auto it = _asks.emplace(elem.price, elem);
-    _asksHashTable.emplace(elem.price, it.first);
+    if (const auto it = _asksHashTable.find(elem.price); it != _asksHashTable.cend()) {
+      it->second->second.quantity += elem.quantity;
+    } else {
+      auto emplaceIt = _asks.emplace(elem.price, elem);
+      _asksHashTable.emplace(elem.price, emplaceIt.first);
+    }
   } else if (elem.side == Side::BID) {
-    auto it = _bids.emplace(elem.price, elem);
-    _bidsHashTable.emplace(elem.price, it.first);
+    if (const auto it = _bidsHashTable.find(elem.price); it != _bidsHashTable.cend()) {
+      it->second->second.quantity += elem.quantity;
+    } else {
+      auto emplaceIt = _bids.emplace(elem.price, elem);
+      _bidsHashTable.emplace(elem.price, emplaceIt.first);
+    }
   }
-
-  return {};
 }
 
-std::error_code Book::change(Element elem) {
-  if (!elem.is_valid()) {
-    return std::make_error_code(std::errc::invalid_argument);
-  }
-
+void Book::change(Element elem) {
   if (elem.side == Side::ASK) {
     if (const auto it = _asksHashTable.find(elem.price); it != _asksHashTable.cend()) {
       it->second->second.quantity = elem.quantity;
@@ -43,24 +42,20 @@ std::error_code Book::change(Element elem) {
       _bidsHashTable.emplace(elem.price, emplaceIt.first);
     }
   }
-
-  return {};
 }
 
-std::error_code Book::del(double price) {
-  if (!(std::fpclassify(price) == FP_NORMAL && price > 0)) {
-    return std::make_error_code(std::errc::invalid_argument);
-  }
-
+void Book::del(double price) {
   _asks.erase(price);
   _asksHashTable.erase(price);
   _bids.erase(price);
   _bidsHashTable.erase(price);
-
-  return {};
 }
 
 double Book::vwap(size_t depth) {
+  if (_bids.empty() && _asks.empty()) {
+    return 0.;
+  }
+
   double sum = 0;
   double volumes = 0;
 

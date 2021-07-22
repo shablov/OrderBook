@@ -14,7 +14,7 @@
 #include "Element.h"
 
 
-namespace orderV3 {
+namespace orderV3_2 {
 
 using order::Element;
 using order::Side;
@@ -53,11 +53,11 @@ private:
     bool operator()(const Element& lhs, const Element& rhs) { return rhs.price < lhs.price; }
   };
 
-  std::deque<Element> _bids;
-  std::deque<Element> _asks;
+  std::vector<Element> _bids;
+  std::vector<Element> _asks;
 
-  absl::flat_hash_map<double, std::deque<Element>::iterator> _bidsHashTable;
-  absl::flat_hash_map<double, std::deque<Element>::iterator> _asksHashTable;
+  absl::flat_hash_map<double, uint64_t> _bidsHashTable;
+  absl::flat_hash_map<double, uint64_t> _asksHashTable;
 };
 
-}  // namespace orderV3
+}  // namespace orderV3_2

@@ -12,11 +12,11 @@ using order::Element;
 
 class Book {
 public:
-  std::error_code add(Element /*elem*/) { return {}; }
+  void add(Element /*elem*/) {}
 
-  std::error_code change(Element /*elem*/) { return {}; }
+  void change(Element /*elem*/) {}
 
-  std::error_code del(double /*price*/) { return {}; }
+  void del(double /*price*/) {}
 
   double vwap(size_t /*depth*/) { return 1.; }
 };

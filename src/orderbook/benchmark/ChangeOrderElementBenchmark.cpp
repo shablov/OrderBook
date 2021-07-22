@@ -6,13 +6,6 @@
 #include "orderbook/OrderBooks.h"
 
 
-static inline std::error_code _empty_error_code = {};
-static void check(std::error_code ec) {
-  if (ec != _empty_error_code) {
-    throw std::logic_error(ec.message());
-  }
-}
-
 template <typename OrderBookT>
 static OrderBookT createBook(uint64_t startPrice, uint64_t stepPrice, double delimeter, uint64_t bookSize) {
   OrderBookT book;
@@ -21,8 +14,8 @@ static OrderBookT createBook(uint64_t startPrice, uint64_t stepPrice, double del
   uint64_t quantity = 1;
   uint64_t stepQuantity = 1;
   for (size_t i = 0; i < bookSize; ++i) {
-    check(book.add({static_cast<double>(price) / delimeter, static_cast<double>(quantity), order::Side::BID}));
-    check(book.add({static_cast<double>(price) / delimeter, static_cast<double>(quantity), order::Side::ASK}));
+    book.add({static_cast<double>(price) / delimeter, static_cast<double>(quantity), order::Side::BID});
+    book.add({static_cast<double>(price) / delimeter, static_cast<double>(quantity), order::Side::ASK});
 
     price += stepPrice;
     quantity += stepQuantity;
@@ -44,8 +37,8 @@ static void changeTopTenPercentPrices(benchmark::State& state) {
 
   auto price = startPrice;
   for (auto _ : state) {
-    check(book.change({static_cast<double>(price) / delimeter, 1., order::Side::BID}));
-    check(book.change({static_cast<double>(price) / delimeter, 1., order::Side::ASK}));
+    book.change({static_cast<double>(price) / delimeter, 1., order::Side::BID});
+    book.change({static_cast<double>(price) / delimeter, 1., order::Side::ASK});
     price += stepPrice;
     if (price >= topTenPercentEndPrice) {
       price = startPrice;
@@ -69,8 +62,8 @@ static void changeAfterTenPercentPrices(benchmark::State& state) {
 
   auto price = topTenPercentEndPrice;
   for (auto _ : state) {
-    check(book.change({static_cast<double>(price) / delimeter, 1., order::Side::BID}));
-    check(book.change({static_cast<double>(price) / delimeter, 1., order::Side::ASK}));
+    book.change({static_cast<double>(price) / delimeter, 1., order::Side::BID});
+    book.change({static_cast<double>(price) / delimeter, 1., order::Side::ASK});
     price += stepPrice;
     if (price >= endPrice) {
       price = topTenPercentEndPrice;
@@ -103,8 +96,8 @@ static void changeProdLikeStatePrices(benchmark::State& state) {
   std::piecewise_constant_distribution<> d(i.begin(), i.end(), w.begin());
 
   for (auto _ : state) {
-    check(book.change({static_cast<uint64_t>(d(gen) * delimeter) / delimeter, 1., order::Side::BID}));
-    check(book.change({static_cast<uint64_t>(d(gen) * delimeter) / delimeter, 1., order::Side::ASK}));
+    book.change({static_cast<uint64_t>(d(gen) * delimeter) / delimeter, 1., order::Side::BID});
+    book.change({static_cast<uint64_t>(d(gen) * delimeter) / delimeter, 1., order::Side::ASK});
   }
 
   state.SetItemsProcessed(static_cast<int64_t>(state.iterations() * 2));
@@ -135,6 +128,10 @@ BENCHMARK_TEMPLATE(changeTopTenPercentPrices, orderV3_1::Book)
     ->RangeMultiplier(16)
     ->Range(1 << 8, 1 << 16)
     ->ArgName("BookSize");
+BENCHMARK_TEMPLATE(changeTopTenPercentPrices, orderV3_2::Book)
+    ->RangeMultiplier(16)
+    ->Range(1 << 8, 1 << 16)
+    ->ArgName("BookSize");
 BENCHMARK_TEMPLATE(changeTopTenPercentPrices, orderEmpty::Book)
     ->RangeMultiplier(16)
     ->Range(1 << 8, 1 << 16)
@@ -160,7 +157,11 @@ BENCHMARK_TEMPLATE(changeAfterTenPercentPrices, orderV3::Book)
     ->RangeMultiplier(16)
     ->Range(1 << 8, 1 << 16)
     ->ArgName("BookSize");
-BENCHMARK_TEMPLATE(changeTopTenPercentPrices, orderV3_1::Book)
+BENCHMARK_TEMPLATE(changeAfterTenPercentPrices, orderV3_1::Book)
+    ->RangeMultiplier(16)
+    ->Range(1 << 8, 1 << 16)
+    ->ArgName("BookSize");
+BENCHMARK_TEMPLATE(changeAfterTenPercentPrices, orderV3_2::Book)
     ->RangeMultiplier(16)
     ->Range(1 << 8, 1 << 16)
     ->ArgName("BookSize");
@@ -189,7 +190,11 @@ BENCHMARK_TEMPLATE(changeProdLikeStatePrices, orderV3::Book)
     ->RangeMultiplier(16)
     ->Range(1 << 8, 1 << 16)
     ->ArgName("BookSize");
-BENCHMARK_TEMPLATE(changeTopTenPercentPrices, orderV3_1::Book)
+BENCHMARK_TEMPLATE(changeProdLikeStatePrices, orderV3_1::Book)
+    ->RangeMultiplier(16)
+    ->Range(1 << 8, 1 << 16)
+    ->ArgName("BookSize");
+BENCHMARK_TEMPLATE(changeProdLikeStatePrices, orderV3_2::Book)
     ->RangeMultiplier(16)
     ->Range(1 << 8, 1 << 16)
     ->ArgName("BookSize");

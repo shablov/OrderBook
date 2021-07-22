@@ -7,6 +7,7 @@
 
 #include <range/v3/view/all.hpp>
 #include <range/v3/view/concat.hpp>
+#include <range/v3/view/map.hpp>
 #include <range/v3/view/reverse.hpp>
 
 #include <absl/container/flat_hash_map.h>
@@ -21,18 +22,18 @@ using order::Side;
 
 class Book {
 public:
-  std::error_code add(Element elem);
+  void add(Element elem);
 
-  std::error_code change(Element elem);
+  void change(Element elem);
 
-  std::error_code del(double price);
+  void del(double price);
 
   double vwap(size_t depth);
 
   auto orders() {
     using namespace std;
-    return ranges::concat_view(ranges::views::all(_bids) | ranges::views::reverse,
-                               ranges::views::all(_asks) | ranges::views::reverse);
+    return ranges::concat_view(ranges::views::all(_bids) | ranges::views::values | ranges::views::reverse,
+                               ranges::views::all(_asks) | ranges::views::values | ranges::views::reverse);
   }
 
 private:

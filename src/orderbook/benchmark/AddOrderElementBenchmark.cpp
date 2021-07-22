@@ -4,14 +4,6 @@
 
 #include "orderbook/OrderBooks.h"
 
-static inline std::error_code _empty_error_code = {};
-static bool check(std::error_code ec) {
-  if (ec != _empty_error_code) {
-    throw std::logic_error(ec.message());
-  }
-  return true;
-}
-
 template <typename OrderBookT>
 void addLargerOrderElementAlways(benchmark::State& state) {
   OrderBookT _book;
@@ -21,8 +13,8 @@ void addLargerOrderElementAlways(benchmark::State& state) {
   double quantity = 1;
   double stepQuantity = 1;
   for (auto _ : state) {
-    check(_book.add({price, quantity, order::Side::BID}));
-    check(_book.add({price, quantity, order::Side::ASK}));
+    _book.add({price, quantity, order::Side::BID});
+    _book.add({price, quantity, order::Side::ASK});
     price += stepPrice;
     quantity += stepQuantity;
   }
@@ -39,8 +31,8 @@ void addSmallerOrderElementAlways(benchmark::State& state) {
   double quantity = 1;
   double stepQuantity = 1;
   for (auto _ : state) {
-    check(_book.add({price, quantity, order::Side::BID}));
-    check(_book.add({price, quantity, order::Side::ASK}));
+    _book.add({price, quantity, order::Side::BID});
+    _book.add({price, quantity, order::Side::ASK});
     price -= stepPrice;
     quantity += stepQuantity;
   }
@@ -58,10 +50,10 @@ void addMiddleOrderElementAlways(benchmark::State& state) {
   double quantity = 1;
   double stepQuantity = 1;
   for (auto _ : state) {
-    check(_book.add({startPrice, quantity, order::Side::BID}));
-    check(_book.add({endPrice, quantity, order::Side::BID}));
-    check(_book.add({startPrice, quantity, order::Side::ASK}));
-    check(_book.add({endPrice, quantity, order::Side::ASK}));
+    _book.add({startPrice, quantity, order::Side::BID});
+    _book.add({endPrice, quantity, order::Side::BID});
+    _book.add({startPrice, quantity, order::Side::ASK});
+    _book.add({endPrice, quantity, order::Side::ASK});
     startPrice += stepPrice;
     endPrice -= stepPrice;
     quantity += stepQuantity;
@@ -76,6 +68,7 @@ BENCHMARK_TEMPLATE(addLargerOrderElementAlways, orderV2_1::Book);
 BENCHMARK_TEMPLATE(addLargerOrderElementAlways, orderV2_2::Book);
 BENCHMARK_TEMPLATE(addLargerOrderElementAlways, orderV3::Book);
 BENCHMARK_TEMPLATE(addLargerOrderElementAlways, orderV3_1::Book);
+BENCHMARK_TEMPLATE(addLargerOrderElementAlways, orderV3_2::Book);
 BENCHMARK_TEMPLATE(addLargerOrderElementAlways, orderEmpty::Book);
 
 BENCHMARK_TEMPLATE(addSmallerOrderElementAlways, order::Book);
@@ -84,6 +77,7 @@ BENCHMARK_TEMPLATE(addSmallerOrderElementAlways, orderV2_1::Book);
 BENCHMARK_TEMPLATE(addSmallerOrderElementAlways, orderV2_2::Book);
 BENCHMARK_TEMPLATE(addSmallerOrderElementAlways, orderV3::Book);
 BENCHMARK_TEMPLATE(addSmallerOrderElementAlways, orderV3_1::Book);
+BENCHMARK_TEMPLATE(addSmallerOrderElementAlways, orderV3_2::Book);
 BENCHMARK_TEMPLATE(addSmallerOrderElementAlways, orderEmpty::Book);
 
 BENCHMARK_TEMPLATE(addMiddleOrderElementAlways, order::Book);
@@ -92,4 +86,5 @@ BENCHMARK_TEMPLATE(addMiddleOrderElementAlways, orderV2_1::Book);
 BENCHMARK_TEMPLATE(addMiddleOrderElementAlways, orderV2_2::Book);
 BENCHMARK_TEMPLATE(addMiddleOrderElementAlways, orderV3::Book);
 BENCHMARK_TEMPLATE(addMiddleOrderElementAlways, orderV3_1::Book);
+BENCHMARK_TEMPLATE(addMiddleOrderElementAlways, orderV3_2::Book);
 BENCHMARK_TEMPLATE(addMiddleOrderElementAlways, orderEmpty::Book);
