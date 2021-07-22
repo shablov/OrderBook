@@ -67,7 +67,7 @@ protected:
     double minAsk = 0.;
     for (auto order : orders) {
       if (order.side == order::Side::BID) {
-        if (maxBid == 0.) {
+        if (order::is_equal(maxBid, 0.)) {
           maxBid = order.price;
         } else {
           EXPECT_GE(maxBid, order.price);
@@ -76,7 +76,7 @@ protected:
       }
 
       if (order.side == order::Side::ASK) {
-        if (minAsk == 0.) {
+        if (order::is_equal(minAsk, 0.)) {
           minAsk = order.price;
         } else {
           EXPECT_LE(minAsk, order.price);

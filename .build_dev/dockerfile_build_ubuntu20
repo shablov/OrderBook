@@ -16,6 +16,7 @@ RUN \
         g++-10 \
         python3-pip \
         curl \
+        clang-format-11 \
         binutils && \
     pip3 install conan && \
 # Set conan profile
