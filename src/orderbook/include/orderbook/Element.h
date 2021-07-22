@@ -17,6 +17,8 @@ struct Element {
   Side side;
 
   bool is_valid();
+
+  friend bool operator==(const Element& lhs, const Element& rhs);
 };
 
 }  // namespace order
